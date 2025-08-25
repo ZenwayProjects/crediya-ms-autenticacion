@@ -31,4 +31,14 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
         return this.save(usuario);
     }
+
+    @Override
+    public Mono<Boolean> existsByEmail(String email) {
+        return repository.existsByEmailIgnoreCase(email);
+    }
+
+    @Override
+    public Mono<Usuario> findByEmail(String email) {
+        return repository.findByEmailIgnoreCase(email);
+    }
 }

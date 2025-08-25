@@ -12,13 +12,18 @@ public class UsuarioUseCase {
 
     public Mono<Usuario> registrarUsuario(Usuario usuario){
 
-
-
-        if(usuario.getRolId() == null){
+        if (usuario.getRolId() == null) {
             usuario.setRolId(1L);
         }
 
-        return usuarioRepository.registrarUsuario(usuario);
+        return usuarioRepository.existsByEmail(usuario.getEmail())
+                .flatMap(exists -> {
+                    if (Boolean.TRUE.equals(exists)) {
+                        return Mono.error(new RuntimeException("Email en uso"));
+                    } else {
+                        return usuarioRepository.registrarUsuario(usuario);
+                    }
+                });
 
     }
 

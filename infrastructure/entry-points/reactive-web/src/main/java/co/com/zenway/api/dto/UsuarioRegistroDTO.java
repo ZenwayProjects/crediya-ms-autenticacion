@@ -37,7 +37,7 @@ public class UsuarioRegistroDTO {
 
     @Schema(example = "1800000")
     @Min(value = 0, message = "El salario no puede ser negativo")
-    @Max(value = 15000000, message = "El salario no debe exceder los 15 millones")
+    @Max(value = 15000001, message = "El salario no debe exceder los 15 millones")
     private BigDecimal salarioBase;
 
 
