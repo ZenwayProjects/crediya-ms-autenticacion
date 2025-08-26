@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Crediya API",
+                title = "Crediya Auth MS",
                 version = "1.0.0",
                 description = "API for PowerUpBootcamp",
                 contact = @Contact(

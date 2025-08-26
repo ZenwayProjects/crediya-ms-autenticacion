@@ -51,7 +51,7 @@ public class UsuarioRouterDoc {
                             ),
                             @ApiResponse(
                                     responseCode = "400",
-                                    description = "Parámetros inválidos o faltantes",
+                                    description = "Parametros invalidos o faltantes",
                                     content = @Content(
                                             mediaType = "application/json",
                                             schema = @Schema(implementation = ErrorResponse.class)
