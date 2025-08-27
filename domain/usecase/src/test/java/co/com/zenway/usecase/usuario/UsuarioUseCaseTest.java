@@ -31,14 +31,14 @@ class UsuarioUseCaseTest {
         usuarioUseCase = new UsuarioUseCase(usuarioRepository);
 
         usuarioTest = Usuario.builder()
-                .id(1L)
+                .id(150L)
                 .nombre("German")
                 .apellido("Perez")
-                .email("german.perez@gmail.com")
+                .email("germanperez@gmail.com")
                 .documentoIdentidad("193204829")
-                .telefono("316327834")
+                .telefono("3163278354")
                 .rolId(2L)
-                .salarioBase( new BigDecimal("1500000"))
+                .salarioBase( new BigDecimal("100000"))
                 .build();
     }
 
@@ -46,6 +46,8 @@ class UsuarioUseCaseTest {
     void shouldRegistrarUsuarioWhenEmailIsNotUsed(){
         Mockito.when(usuarioRepository.existsByEmail(usuarioTest.getEmail())).thenReturn(Mono.just(false));
         Mockito.when(usuarioRepository.registrarUsuario(usuarioTest)).thenReturn(Mono.just(usuarioTest));
+        Mockito.when(usuarioRepository.existsByDocumentoIdentidad(usuarioTest.getDocumentoIdentidad()))
+                .thenReturn(Mono.just(false));
 
         StepVerifier.create(usuarioUseCase.registrarUsuario(usuarioTest))
                 .expectNext(usuarioTest)

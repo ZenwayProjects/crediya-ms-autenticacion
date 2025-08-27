@@ -10,10 +10,9 @@ public class UsuarioUseCase {
 
     private final UsuarioRepository usuarioRepository;
 
-    private final Long ROL_ADMIN = 1L;
-    private final Long ROL_USUARIO = 2L;
-    public Mono<Usuario> registrarUsuario(Usuario usuario){
-
+    private static final Long ROL_ADMIN = 1L;
+    private static final Long ROL_USUARIO = 2L;
+    public Mono<Usuario> registrarUsuario(Usuario usuario) {
 
 
         if (usuario.getRolId() == null) {
@@ -21,16 +20,18 @@ public class UsuarioUseCase {
         }
 
         return usuarioRepository.existsByEmail(usuario.getEmail())
-                .flatMap(exists -> {
-                    if (Boolean.TRUE.equals(exists)) {
+                .flatMap(existsEmail -> {
+                    if (Boolean.TRUE.equals(existsEmail)) {
                         return Mono.error(new RuntimeException("Email en uso"));
-                    } else {
-                        return usuarioRepository.registrarUsuario(usuario);
                     }
+                    return usuarioRepository.existsByDocumentoIdentidad(usuario.getDocumentoIdentidad().trim());
+                })
+                .flatMap(existsDoc -> {
+                    if (Boolean.TRUE.equals(existsDoc)) {
+                        return Mono.error(new RuntimeException("Documento de identidad en uso"));
+                    }
+                    return usuarioRepository.registrarUsuario(usuario);
                 });
-
     }
-
-
 
 }

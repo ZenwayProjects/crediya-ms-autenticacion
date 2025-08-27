@@ -12,5 +12,7 @@ public interface UsuarioReactiveRepository extends ReactiveCrudRepository<Usuari
     Mono<Boolean> existsByEmailIgnoreCase(String email);
     Mono<Usuario> findByEmailIgnoreCase(String email);
 
+    Mono<Boolean> existsByDocumentoIdentidadIgnoreCase(String email);
+
 
 }
