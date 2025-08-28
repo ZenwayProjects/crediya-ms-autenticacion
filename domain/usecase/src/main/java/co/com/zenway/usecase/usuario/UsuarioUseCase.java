@@ -2,6 +2,9 @@ package co.com.zenway.usecase.usuario;
 
 import co.com.zenway.model.usuario.Usuario;
 import co.com.zenway.model.usuario.gateways.UsuarioRepository;
+import co.com.zenway.usecase.usuario.exceptions.DocumentoDeIdentidadEnUso;
+import co.com.zenway.usecase.usuario.exceptions.EmailEnUso;
+import co.com.zenway.usecase.usuario.utils.Constantes;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -22,13 +25,13 @@ public class UsuarioUseCase {
         return usuarioRepository.existsByEmail(usuario.getEmail())
                 .flatMap(existsEmail -> {
                     if (Boolean.TRUE.equals(existsEmail)) {
-                        return Mono.error(new RuntimeException("Email en uso"));
+                        return Mono.error(new EmailEnUso(Constantes.EMAIL_EN_USO));
                     }
                     return usuarioRepository.existsByDocumentoIdentidad(usuario.getDocumentoIdentidad().trim());
                 })
                 .flatMap(existsDoc -> {
                     if (Boolean.TRUE.equals(existsDoc)) {
-                        return Mono.error(new RuntimeException("Documento de identidad en uso"));
+                        return Mono.error(new DocumentoDeIdentidadEnUso(Constantes.DOCUMENTO_IDENTIDAD_EN_USO));
                     }
                     return usuarioRepository.registrarUsuario(usuario);
                 });

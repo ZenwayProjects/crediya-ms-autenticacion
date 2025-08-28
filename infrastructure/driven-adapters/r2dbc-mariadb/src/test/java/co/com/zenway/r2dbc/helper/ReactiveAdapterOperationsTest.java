@@ -65,6 +65,7 @@ class ReactiveAdapterOperationsTest {
         DummyEntity entity = new DummyEntity("1", "test");
 
         when(repository.findById("1")).thenReturn(Mono.just(data));
+        when(mapper.map(data, DummyEntity.class)).thenReturn(entity);
 
         StepVerifier.create(operations.findById("1"))
                 .expectNext(entity)
@@ -78,6 +79,7 @@ class ReactiveAdapterOperationsTest {
 
         when(mapper.map(entity, DummyData.class)).thenReturn(data);
         when(repository.findAll(any(Example.class))).thenReturn(Flux.just(data));
+        when(mapper.map(data, DummyEntity.class)).thenReturn(entity);
 
         StepVerifier.create(operations.findByExample(entity))
                 .expectNext(entity)
@@ -92,11 +94,14 @@ class ReactiveAdapterOperationsTest {
         DummyEntity entity2 = new DummyEntity("2", "test2");
 
         when(repository.findAll()).thenReturn(Flux.just(data1, data2));
+        when(mapper.map(data1, DummyEntity.class)).thenReturn(entity1);
+        when(mapper.map(data2, DummyEntity.class)).thenReturn(entity2);
 
         StepVerifier.create(operations.findAll())
                 .expectNext(entity1, entity2)
                 .verifyComplete();
     }
+
 
     static class DummyEntity {
         private String id;

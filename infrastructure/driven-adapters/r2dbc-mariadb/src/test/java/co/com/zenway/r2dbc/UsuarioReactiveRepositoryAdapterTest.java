@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UsuarioReactiveRepositoryAdapterTest {
-    // TODO: change four you own tests
 
     @InjectMocks
     UsuarioReactiveRepositoryAdapter repositoryAdapter;
@@ -33,50 +32,64 @@ class UsuarioReactiveRepositoryAdapterTest {
 
     @Test
     void mustFindValueById() {
+        UsuarioEntity entity = new UsuarioEntity();
+        Usuario usuario = new Usuario();
 
-        when(repository.findById(Long.valueOf("1"))).thenReturn(Mono.just(new UsuarioEntity()));
-        when(mapper.map("test", Object.class)).thenReturn("test");
+        when(repository.findById(1L)).thenReturn(Mono.just(entity));
+        when(mapper.map(entity, Usuario.class)).thenReturn(usuario);
 
-        Mono<Usuario> result = repositoryAdapter.findById(Long.valueOf("1"));
+        Mono<Usuario> result = repositoryAdapter.findById(1L);
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
+                .expectNext(usuario)
                 .verifyComplete();
     }
 
     @Test
     void mustFindAllValues() {
-        when(repository.findAll()).thenReturn(Flux.just(new UsuarioEntity()));
-        when(mapper.map("test", Object.class)).thenReturn("test");
+        UsuarioEntity entity = new UsuarioEntity();
+        Usuario usuario = new Usuario();
+
+        when(repository.findAll()).thenReturn(Flux.just(entity));
+        when(mapper.map(entity, Usuario.class)).thenReturn(usuario);
 
         Flux<Usuario> result = repositoryAdapter.findAll();
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
+                .expectNext(usuario)
                 .verifyComplete();
     }
 
     @Test
     void mustFindByExample() {
-        when(repository.findAll(any(Example.class))).thenReturn(Flux.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
+        Usuario example = new Usuario();
+        UsuarioEntity entity = new UsuarioEntity();
+        Usuario usuario = new Usuario();
 
-        Flux<Usuario> result = repositoryAdapter.findByExample(new Usuario());
+        when(mapper.map(example, UsuarioEntity.class)).thenReturn(entity);
+        when(repository.findAll(any(Example.class))).thenReturn(Flux.just(entity));
+        when(mapper.map(entity, Usuario.class)).thenReturn(usuario);
+
+        Flux<Usuario> result = repositoryAdapter.findByExample(example);
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
+                .expectNext(usuario)
                 .verifyComplete();
     }
 
     @Test
     void mustSaveValue() {
-        when(repository.save(new UsuarioEntity())).thenReturn(Mono.just(new UsuarioEntity()));
-        when(mapper.map("test", Object.class)).thenReturn("test");
+        Usuario usuario = new Usuario();
+        UsuarioEntity entity = new UsuarioEntity();
 
-        Mono<Usuario> result = repositoryAdapter.save(new Usuario());
+        when(mapper.map(usuario, UsuarioEntity.class)).thenReturn(entity);
+        when(repository.save(entity)).thenReturn(Mono.just(entity));
+        when(mapper.map(entity, Usuario.class)).thenReturn(usuario);
+
+        Mono<Usuario> result = repositoryAdapter.save(usuario);
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
+                .expectNext(usuario)
                 .verifyComplete();
     }
 }

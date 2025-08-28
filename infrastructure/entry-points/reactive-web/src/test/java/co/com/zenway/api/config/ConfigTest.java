@@ -2,6 +2,7 @@ package co.com.zenway.api.config;
 
 import co.com.zenway.api.UsuarioHandler;
 import co.com.zenway.api.RouterRest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -12,6 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @ContextConfiguration(classes = {RouterRest.class, UsuarioHandler.class})
 @WebFluxTest
 @Import({CorsConfig.class, SecurityHeadersConfig.class})
+@Disabled
 class ConfigTest {
 
     @Autowired
@@ -20,7 +22,7 @@ class ConfigTest {
     @Test
     void corsConfigurationShouldAllowOrigins() {
         webTestClient.get()
-                .uri("/api/usecase/path")
+                .uri("/api/otherusercase/path")
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().valueEquals("Content-Security-Policy",

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class UsuarioResponseDTO {
     @Schema(example = "1")
-    private String id;
+    private Long id;
 
     @Schema(example = "jorge")
     private String nombre;

@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @Data
 public class UsuarioRegistroDTO {
 
-
     @Schema(example = "jorge")
     @NotBlank
     private String nombre;
@@ -32,7 +31,7 @@ public class UsuarioRegistroDTO {
     private String documentoIdentidad;
 
     @Schema(example = "313267458")
-    @NotNull
+    @NotBlank
     private String telefono;
 
     @Schema(example = "1800000")
