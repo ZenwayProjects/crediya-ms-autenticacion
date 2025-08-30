@@ -2,6 +2,7 @@ package co.com.zenway.api;
 
 import co.com.zenway.api.dto.UsuarioRegistroDTO;
 import co.com.zenway.api.mapper.UsuarioMapper;
+import co.com.zenway.api.utils.ConstantesLogger;
 import co.com.zenway.usecase.usuario.UsuarioUseCase;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 
 @Component
@@ -47,12 +50,23 @@ public class UsuarioHandler {
                 )
                 .doOnNext(resp -> log.info("Usuario registrado: {}", resp))
                 .doOnError(e -> log.error("Error al registrar: {}", e.getMessage(), e))
-                .doFinally(sig -> log.info("Flujo terminado: {}", sig))
+                .doFinally(sig -> log.info(ConstantesLogger.FLUJO_TERMINADO, sig))
                 .onErrorResume(globalErrorHandler::handler);
     }
 
 
-    public Mono<ServerResponse> listenGETOtherUseCase(ServerRequest serverRequest) {
-        return ServerResponse.ok().bodyValue(serverRequest);
+    public Mono<ServerResponse> obtenerEmailPorDocumento(ServerRequest serverRequest) {
+
+        return Mono.just(serverRequest.pathVariable("documento"))
+                .doOnSubscribe(info -> log.info("Iniciando consulta de email basado en el documento de identidad"))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("El documento no está registrado")))
+                .flatMap(usuarioUseCase::obtenerEmailPorDocumento)
+                .flatMap(email -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(Map.of("email", email)))
+                .doOnNext(resp -> log.info("Consulta realizada con exito"))
+                .doOnError(error -> log.error("Error al buscar el email : {}", error.getMessage()))
+                .doFinally(sig -> log.info(ConstantesLogger.FLUJO_TERMINADO, sig))
+                .onErrorResume(globalErrorHandler::handler);
     }
 }

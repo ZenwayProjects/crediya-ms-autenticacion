@@ -46,6 +46,11 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     }
 
     @Override
+    public Mono<String> obtenerEmailPorDocumentoIdentidad(String documento) {
+        return repository.findEmailByDocumento(documento);
+    }
+
+    @Override
     public Mono<Usuario> findByEmail(String email) {
         return repository.findByEmailIgnoreCase(email);
     }
