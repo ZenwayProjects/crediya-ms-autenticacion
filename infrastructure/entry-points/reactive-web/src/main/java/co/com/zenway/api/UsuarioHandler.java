@@ -63,7 +63,7 @@ public class UsuarioHandler {
                 .flatMap(usuarioUseCase::obtenerEmailPorDocumento)
                 .flatMap(email -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(Map.of("email", email)))
+                        .bodyValue(email))
                 .doOnNext(resp -> log.info("Consulta realizada con exito"))
                 .doOnError(error -> log.error("Error al buscar el email : {}", error.getMessage()))
                 .doFinally(sig -> log.info(ConstantesLogger.FLUJO_TERMINADO, sig))
