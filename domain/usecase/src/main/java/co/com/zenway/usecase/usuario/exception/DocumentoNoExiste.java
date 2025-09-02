@@ -1,4 +1,4 @@
-package co.com.zenway.usecase.usuario.exceptions;
+package co.com.zenway.usecase.usuario.exception;
 
 public class DocumentoNoExiste extends RuntimeException{
 

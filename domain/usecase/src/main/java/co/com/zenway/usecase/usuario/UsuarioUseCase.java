@@ -2,9 +2,9 @@ package co.com.zenway.usecase.usuario;
 
 import co.com.zenway.model.usuario.Usuario;
 import co.com.zenway.model.usuario.gateways.UsuarioRepository;
-import co.com.zenway.usecase.usuario.exceptions.DocumentoDeIdentidadEnUso;
-import co.com.zenway.usecase.usuario.exceptions.DocumentoNoExiste;
-import co.com.zenway.usecase.usuario.exceptions.EmailEnUso;
+import co.com.zenway.usecase.usuario.exception.DocumentoDeIdentidadEnUso;
+import co.com.zenway.usecase.usuario.exception.DocumentoNoExiste;
+import co.com.zenway.usecase.usuario.exception.EmailEnUso;
 import co.com.zenway.usecase.usuario.utils.Constantes;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
