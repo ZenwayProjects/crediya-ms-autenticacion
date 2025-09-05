@@ -20,9 +20,10 @@ public class Usuario {
     private String apellido;
     private LocalDate fechaNacimiento;
     private String email;
+    private String password;
     private String documentoIdentidad;
     private String telefono;
     private BigDecimal salarioBase;
-    private Long rolId;
+    private Short rolId;
 
 }

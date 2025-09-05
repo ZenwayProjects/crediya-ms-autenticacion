@@ -1,5 +1,7 @@
 package co.com.zenway.usecase.usuario;
 
+import co.com.zenway.model.rol.Rol;
+import co.com.zenway.model.rol.gateways.RolRepository;
 import co.com.zenway.model.usuario.Usuario;
 import co.com.zenway.model.usuario.gateways.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,20 +20,23 @@ import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
-class UsuarioUseCaseTest {
+class RegistroUsuarioUseCaseTest {
 
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private RolRepository rolRepository;
+
     private Usuario usuarioTest;
 
-    private UsuarioUseCase usuarioUseCase;
+    private RegistroUsuarioUseCase registroUsuarioUseCase;
 
 
 
     @BeforeEach
     void setup() {
-        usuarioUseCase = new UsuarioUseCase(usuarioRepository);
+        registroUsuarioUseCase = new RegistroUsuarioUseCase(usuarioRepository,rolRepository );
 
         usuarioTest = Usuario.builder()
                 .id(150L)
@@ -40,54 +45,74 @@ class UsuarioUseCaseTest {
                 .email("germanperez@gmail.com")
                 .documentoIdentidad("193204829")
                 .telefono("3163278354")
-                .rolId(2L)
+                .rolId((short) 2)
                 .salarioBase( new BigDecimal("100000"))
                 .build();
     }
 
     @Test
-    void shouldRegistrarUsuarioWhenEmailIsNotUsed(){
-        when(usuarioRepository.existsByEmail(usuarioTest.getEmail())).thenReturn(Mono.just(false));
-        when(usuarioRepository.registrarUsuario(usuarioTest)).thenReturn(Mono.just(usuarioTest));
-        when(usuarioRepository.existsByDocumentoIdentidad(usuarioTest.getDocumentoIdentidad()))
+    void shouldRegistrarUsuarioWhenEmailIsNotUsedAndRolIsNull() {
+        Rol rolPorDefecto = new Rol();
+        rolPorDefecto.setId((short) 99);
+        rolPorDefecto.setNombre("ROL_POR_DEFECTO");
+
+        Usuario usuarioSinRol = new Usuario();
+        usuarioSinRol.setEmail("test@test.com");
+        usuarioSinRol.setDocumentoIdentidad("12345");
+        usuarioSinRol.setRolId(null);
+
+        when(usuarioRepository.existsByEmail(usuarioSinRol.getEmail()))
                 .thenReturn(Mono.just(false));
+        when(usuarioRepository.existsByDocumentoIdentidad(usuarioSinRol.getDocumentoIdentidad()))
+                .thenReturn(Mono.just(false));
+        when(rolRepository.buscarRolPorDefecto())
+                .thenReturn(Mono.just(rolPorDefecto));
+        when(usuarioRepository.registrarUsuario(any()))
+                .thenAnswer(inv -> Mono.just(inv.getArgument(0)));
 
-        StepVerifier.create(usuarioUseCase.registrarUsuario(usuarioTest))
-                .expectNext(usuarioTest)
+        StepVerifier.create(registroUsuarioUseCase.registrarUsuario(usuarioSinRol))
+                .expectNextMatches(u -> u.getRolId().equals((short) 99))
                 .verifyComplete();
-
     }
 
+
+
     @Test
-    void shouldAssignRolAdminWhenRolIsNull() {
+    void shouldAssignRolUsuarioWhenRolIsNull() {
         Usuario usuario = new Usuario();
         usuario.setEmail("test@test.com");
         usuario.setDocumentoIdentidad("12345232");
         usuario.setRolId(null);
 
+        Rol rolPorDefecto = new Rol();
+        rolPorDefecto.setId((short) 2);
+        rolPorDefecto.setNombre("ROL_USUARIO");
+
         when(usuarioRepository.existsByEmail(usuario.getEmail()))
                 .thenReturn(Mono.just(false));
         when(usuarioRepository.existsByDocumentoIdentidad(usuario.getDocumentoIdentidad()))
                 .thenReturn(Mono.just(false));
+        when(rolRepository.buscarRolPorDefecto())
+                .thenReturn(Mono.just(rolPorDefecto)); // <-- ahora sí correcto
         when(usuarioRepository.registrarUsuario(any()))
                 .thenAnswer(invocation -> {
                     Usuario u = invocation.getArgument(0);
-                    assertEquals(1L, u.getRolId());
-                    assertEquals(1L, u.getRolId());
+                    assertEquals((short) 2, u.getRolId());
                     return Mono.just(u);
                 });
 
-        StepVerifier.create(usuarioUseCase.registrarUsuario(usuario))
-                .expectNextMatches(u -> u.getRolId().equals(1L))
+        StepVerifier.create(registroUsuarioUseCase.registrarUsuario(usuario))
+                .expectNextMatches(u -> u.getRolId().equals((short) 2))
                 .verifyComplete();
     }
+
 
     @Test
     void shouldKeepExistingRolWhenNotNull() {
         Usuario usuario = new Usuario();
         usuario.setEmail("test2@test.com");
         usuario.setDocumentoIdentidad("67890");
-        usuario.setRolId(2L);
+        usuario.setRolId((short) 2);
 
         when(usuarioRepository.existsByEmail(usuario.getEmail()))
                 .thenReturn(Mono.just(false));
@@ -96,10 +121,12 @@ class UsuarioUseCaseTest {
         when(usuarioRepository.registrarUsuario(any()))
                 .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
-        StepVerifier.create(usuarioUseCase.registrarUsuario(usuario))
-                .expectNextMatches(u -> u.getRolId().equals(2L))
+        StepVerifier.create(registroUsuarioUseCase.registrarUsuario(usuario))
+                .expectNextMatches(u -> u.getRolId().equals((short) 2))
                 .verifyComplete();
     }
+
+
 
 
 }

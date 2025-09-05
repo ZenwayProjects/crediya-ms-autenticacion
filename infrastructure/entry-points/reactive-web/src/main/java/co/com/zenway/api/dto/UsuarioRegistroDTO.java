@@ -31,13 +31,20 @@ public class UsuarioRegistroDTO {
     private String documentoIdentidad;
 
     @Schema(example = "313267458")
-    @NotBlank
+    @NotBlank(message = "El telefono es obligatorio")
+    @Size(max = 15, message = "El telefono no puede superar los 15 digitos")
     private String telefono;
 
     @Schema(example = "1800000")
     @Min(value = 0, message = "El salario no puede ser negativo")
     @Max(value = 15000001, message = "El salario no debe exceder los 15 millones")
     private BigDecimal salarioBase;
+
+    @Schema(example = "Mipassword!1")
+    @NotBlank(message = "La contraseña no puede estar vacía")
+    private String password;
+
+
 
 
 }

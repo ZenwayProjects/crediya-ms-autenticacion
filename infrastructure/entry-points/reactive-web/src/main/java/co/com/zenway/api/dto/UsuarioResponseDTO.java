@@ -18,5 +18,5 @@ public class UsuarioResponseDTO {
     private String email;
 
     @Schema(example = "1")
-    private Long rolId;
+    private Short rolId;
 }

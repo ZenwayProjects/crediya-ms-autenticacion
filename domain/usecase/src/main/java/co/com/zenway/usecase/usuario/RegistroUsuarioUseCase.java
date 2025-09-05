@@ -1,6 +1,8 @@
 package co.com.zenway.usecase.usuario;
 
+import co.com.zenway.model.rol.gateways.RolRepository;
 import co.com.zenway.model.usuario.Usuario;
+import co.com.zenway.model.usuario.gateways.PasswordEncoder;
 import co.com.zenway.model.usuario.gateways.UsuarioRepository;
 import co.com.zenway.usecase.usuario.exception.DocumentoDeIdentidadEnUso;
 import co.com.zenway.usecase.usuario.exception.DocumentoNoExiste;
@@ -10,18 +12,13 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
-public class UsuarioUseCase {
+public class RegistroUsuarioUseCase {
 
     private final UsuarioRepository usuarioRepository;
+    private final RolRepository rolRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    private static final Long ROL_ADMIN = 1L;
-    private static final Long ROL_USUARIO = 2L;
     public Mono<Usuario> registrarUsuario(Usuario usuario) {
-
-
-        if (usuario.getRolId() == null) {
-            usuario.setRolId(ROL_ADMIN);
-        }
 
         return usuarioRepository.existsByEmail(usuario.getEmail())
                 .flatMap(existsEmail -> {
@@ -34,7 +31,13 @@ public class UsuarioUseCase {
                     if (Boolean.TRUE.equals(existsDoc)) {
                         return Mono.error(new DocumentoDeIdentidadEnUso(Constantes.DOCUMENTO_IDENTIDAD_EN_USO));
                     }
-                    return usuarioRepository.registrarUsuario(usuario);
+                    Mono<Usuario> usuarioConRol = usuario.getRolId() == null
+                            ? asignarRolPorDefecto(usuario)
+                            : Mono.just(usuario);
+
+                    return usuarioConRol
+                            .flatMap(this::encriptarPassword)
+                            .flatMap(usuarioRepository::registrarUsuario);
                 });
     }
 
@@ -46,6 +49,20 @@ public class UsuarioUseCase {
                     }
                     return usuarioRepository.obtenerEmailPorDocumentoIdentidad(documento);
                 });
+    }
+
+    private Mono<Usuario> asignarRolPorDefecto(Usuario usuario){
+        return rolRepository.buscarRolPorDefecto()
+                .map(rol -> {
+                    usuario.setRolId(rol.getId());
+                    return usuario;
+                });
+    }
+
+    private Mono<Usuario> encriptarPassword(Usuario usuario){
+        String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
+        usuario.setPassword(passwordEncriptada);
+        return Mono.just(usuario);
     }
 
 }

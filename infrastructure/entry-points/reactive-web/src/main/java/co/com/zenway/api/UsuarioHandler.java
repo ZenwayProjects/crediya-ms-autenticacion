@@ -1,10 +1,14 @@
 package co.com.zenway.api;
 
 import co.com.zenway.api.dto.EmailResponseDTO;
+import co.com.zenway.api.dto.LoginDTO;
+import co.com.zenway.api.dto.TokenResponseDTO;
 import co.com.zenway.api.dto.UsuarioRegistroDTO;
 import co.com.zenway.api.mapper.UsuarioMapper;
 import co.com.zenway.api.utils.ConstantesLogger;
-import co.com.zenway.usecase.usuario.UsuarioUseCase;
+import co.com.zenway.security.adapter.JwtProvider;
+import co.com.zenway.usecase.usuario.LoginUseCase;
+import co.com.zenway.usecase.usuario.RegistroUsuarioUseCase;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +26,37 @@ import reactor.core.publisher.Mono;
 @Log4j2
 public class UsuarioHandler {
 
-    private final UsuarioUseCase usuarioUseCase;
+    private final RegistroUsuarioUseCase registroUsuarioUseCase;
+    private final LoginUseCase loginUseCase;
     private final UsuarioMapper usuarioMapper;
     private final Validator validator;
     private final GlobalErrorHandler globalErrorHandler;
+    private final JwtProvider jwtProvider;
 
 
+    public Mono<ServerResponse> login(ServerRequest serverRequest){
+        return serverRequest.bodyToMono(LoginDTO.class)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Body Requerido")))
+                .flatMap(loginDTO -> loginUseCase.login(loginDTO.getEmail(), loginDTO.getPassword()))
+                .map(jwtProvider::generarToken)
+                .map(TokenResponseDTO::new)
+                .flatMap(resp -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(resp)
+                )
+                .doOnNext(resp -> log.info("Usuario logueado: {}", resp))
+
+                .doOnError(e -> {
+                    log.error("Error en login: {}", e.getMessage(), e);
+                    Throwable cause = e.getCause();
+                    while (cause != null) {
+                        log.error("Caused by: {}", cause.getMessage(), cause);
+                        cause = cause.getCause();
+                    }
+                })
+                .doFinally(sig -> log.info(ConstantesLogger.FLUJO_TERMINADO, sig))
+                .onErrorResume(globalErrorHandler::handler);
+    }
 
 
     public Mono<ServerResponse> registrarUsuario(ServerRequest serverRequest) {
@@ -41,7 +70,7 @@ public class UsuarioHandler {
                     return Mono.just(dto);
                 })
                 .map(usuarioMapper::toModel)
-                .flatMap(usuarioUseCase::registrarUsuario)
+                .flatMap(registroUsuarioUseCase::registrarUsuario)
                 .map(usuarioMapper::toResponse)
                 .flatMap(resp -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +88,7 @@ public class UsuarioHandler {
         return Mono.just(serverRequest.pathVariable("documento"))
                 .doOnSubscribe(info -> log.info("Iniciando consulta de email basado en el documento de identidad"))
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("El documento no puede estar vacío")))
-                .flatMap(usuarioUseCase::obtenerEmailPorDocumento)
+                .flatMap(registroUsuarioUseCase::obtenerEmailPorDocumento)
                 .map(EmailResponseDTO::new)
                 .flatMap(correo -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)

@@ -4,7 +4,7 @@ import co.com.zenway.api.dto.UsuarioRegistroDTO;
 import co.com.zenway.api.dto.UsuarioResponseDTO;
 import co.com.zenway.api.mapper.UsuarioMapper;
 import co.com.zenway.model.usuario.Usuario;
-import co.com.zenway.usecase.usuario.UsuarioUseCase;
+import co.com.zenway.usecase.usuario.RegistroUsuarioUseCase;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ class RouterRestTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private UsuarioUseCase usuarioUseCase;
+    private RegistroUsuarioUseCase registroUsuarioUseCase;
 
     @MockitoBean
     private UsuarioMapper usuarioMapper;
@@ -71,7 +71,7 @@ class RouterRestTest {
 
         when(validator.validate(any())).thenReturn(Collections.emptySet());
         when(usuarioMapper.toModel(any())).thenReturn(usuarioModel);
-        when(usuarioUseCase.registrarUsuario(any())).thenReturn(Mono.just(usuarioModel));
+        when(registroUsuarioUseCase.registrarUsuario(any())).thenReturn(Mono.just(usuarioModel));
         when(usuarioMapper.toResponse(any())).thenReturn(usuarioResponse);
 
         webTestClient.post()

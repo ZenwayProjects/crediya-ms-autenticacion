@@ -38,7 +38,10 @@ public class UsuarioEntity {
     private BigDecimal salarioBase;
 
     @Column("id_rol")
-    private Long rolId;
+    private Short rolId;
+
+    @Column("password")
+    private String password;
 
 
 }

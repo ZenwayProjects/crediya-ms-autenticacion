@@ -14,9 +14,9 @@ import reactor.core.publisher.Mono;
 public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         Usuario/* change for domain model */,
         UsuarioEntity/* change for adapter model */,
-    Long,
-        UsuarioReactiveRepository
-> implements UsuarioRepository {
+        Long,
+        UsuarioReactiveRepository> implements UsuarioRepository {
+
             private final TransactionalOperator transactionalOperator;
 
     public UsuarioReactiveRepositoryAdapter(UsuarioReactiveRepository repository, ObjectMapper mapper, TransactionalOperator transactionalOperator) {
