@@ -10,7 +10,7 @@ public interface UsuarioRepository {
 
     Mono<Boolean> existsByDocumentoIdentidad(String documentoIdentidad);
 
-    Mono<String> obtenerEmailPorDocumentoIdentidad(String documento);
+    Mono<Usuario> obtenerIdYEmailPorDocumentoIdentidad(String documento);
 
     Mono<Usuario> findByEmail(String email);
 

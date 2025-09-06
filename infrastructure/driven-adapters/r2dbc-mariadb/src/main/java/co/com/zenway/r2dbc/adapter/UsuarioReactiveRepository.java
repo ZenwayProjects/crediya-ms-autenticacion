@@ -1,6 +1,7 @@
 package co.com.zenway.r2dbc.adapter;
 
 import co.com.zenway.model.usuario.Usuario;
+import co.com.zenway.model.usuario.dto.UsuarioInfoSolicitudDTO;
 import co.com.zenway.r2dbc.entity.UsuarioEntity;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
@@ -14,8 +15,8 @@ public interface UsuarioReactiveRepository extends ReactiveCrudRepository<Usuari
 
     Mono<Boolean> existsByDocumentoIdentidadIgnoreCase(String email);
 
-    @Query("SELECT email FROM usuario WHERE documento_identidad = :documento LIMIT 1")
-    Mono<String> findEmailByDocumento(String documento);
+    @Query("SELECT id_usuario, email FROM usuario WHERE documento_identidad = :documento LIMIT 1")
+    Mono<Usuario> findIdAndEmailByDocumento(String documento);
 
 
 }

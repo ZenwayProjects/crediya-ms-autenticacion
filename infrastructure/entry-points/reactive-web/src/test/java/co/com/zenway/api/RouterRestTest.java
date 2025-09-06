@@ -67,7 +67,7 @@ class RouterRestTest {
         usuarioResponse.setNombre("Jorge");
         usuarioResponse.setApellido("Perez");
         usuarioResponse.setEmail("jorgeperez@gmail.com");
-        usuarioResponse.setRolId(1L);
+        usuarioResponse.setRolId((short)(2));
 
         when(validator.validate(any())).thenReturn(Collections.emptySet());
         when(usuarioMapper.toModel(any())).thenReturn(usuarioModel);

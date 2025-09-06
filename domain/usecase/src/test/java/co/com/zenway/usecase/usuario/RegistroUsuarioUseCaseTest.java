@@ -3,6 +3,7 @@ package co.com.zenway.usecase.usuario;
 import co.com.zenway.model.rol.Rol;
 import co.com.zenway.model.rol.gateways.RolRepository;
 import co.com.zenway.model.usuario.Usuario;
+import co.com.zenway.model.usuario.gateways.PasswordEncoder;
 import co.com.zenway.model.usuario.gateways.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,13 +31,18 @@ class RegistroUsuarioUseCaseTest {
 
     private Usuario usuarioTest;
 
+    @Mock
     private RegistroUsuarioUseCase registroUsuarioUseCase;
+
+    @Mock
+    private  PasswordEncoder passwordEncoder;
+
 
 
 
     @BeforeEach
     void setup() {
-        registroUsuarioUseCase = new RegistroUsuarioUseCase(usuarioRepository,rolRepository );
+        registroUsuarioUseCase = new RegistroUsuarioUseCase(usuarioRepository,rolRepository, passwordEncoder );
 
         usuarioTest = Usuario.builder()
                 .id(150L)

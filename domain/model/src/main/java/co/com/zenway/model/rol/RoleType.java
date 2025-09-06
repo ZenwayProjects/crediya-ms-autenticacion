@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum RoleType {
     ADMINISTRADOR((short) 1),
-    USUARIO((short) 2),
+    CLIENTE((short) 2),
     ASESOR((short) 3);
 
     private final short id;

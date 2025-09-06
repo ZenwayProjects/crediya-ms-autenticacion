@@ -1,14 +1,15 @@
 package co.com.zenway.api;
 
-import co.com.zenway.api.dto.EmailResponseDTO;
 import co.com.zenway.api.dto.LoginDTO;
 import co.com.zenway.api.dto.TokenResponseDTO;
+import co.com.zenway.api.dto.UsuarioInfoSolicitudBoundaryDTO;
 import co.com.zenway.api.dto.UsuarioRegistroDTO;
 import co.com.zenway.api.mapper.UsuarioMapper;
 import co.com.zenway.api.utils.ConstantesLogger;
 import co.com.zenway.security.adapter.JwtProvider;
 import co.com.zenway.usecase.usuario.LoginUseCase;
 import co.com.zenway.usecase.usuario.RegistroUsuarioUseCase;
+import co.com.zenway.usecase.usuario.SolicitudUseCase;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,8 @@ import reactor.core.publisher.Mono;
 public class UsuarioHandler {
 
     private final RegistroUsuarioUseCase registroUsuarioUseCase;
+    private final SolicitudUseCase solicitudUseCase;
+
     private final LoginUseCase loginUseCase;
     private final UsuarioMapper usuarioMapper;
     private final Validator validator;
@@ -88,13 +91,14 @@ public class UsuarioHandler {
         return Mono.just(serverRequest.pathVariable("documento"))
                 .doOnSubscribe(info -> log.info("Iniciando consulta de email basado en el documento de identidad"))
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("El documento no puede estar vacío")))
-                .flatMap(registroUsuarioUseCase::obtenerEmailPorDocumento)
-                .map(EmailResponseDTO::new)
-                .flatMap(correo -> ServerResponse.ok()
+                .flatMap(solicitudUseCase::obtenerUsuarioIdYEmailPorDocumento)
+                .flatMap(usuarioInfoSolicitudDTO -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(correo))
+                        .bodyValue(new UsuarioInfoSolicitudBoundaryDTO(usuarioInfoSolicitudDTO))
+                        .doOnNext(resp -> log.info("Datos del usuario :{} :{}", usuarioInfoSolicitudDTO.idUsuario(), usuarioInfoSolicitudDTO.email()))
+                )
                 .doOnNext(resp -> log.info("Consulta realizada con exito"))
-                .doOnError(error -> log.error("Error al buscar el email : {}", error.getMessage()))
+                .doOnError(error -> log.error("Error al buscar el id y el email : {}", error.getMessage()))
                 .doFinally(sig -> log.info(ConstantesLogger.FLUJO_TERMINADO, sig))
                 .onErrorResume(globalErrorHandler::handler);
     }
