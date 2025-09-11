@@ -23,6 +23,6 @@ public class RolReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<Rol> buscarRolPorDefecto() {
-        return repository.findByNombre("ROLE_USUARIO");
+        return repository.findByNombre("ROLE_CLIENTE");
     }
 }

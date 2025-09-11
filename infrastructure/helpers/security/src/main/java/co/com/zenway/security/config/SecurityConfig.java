@@ -2,6 +2,7 @@ package co.com.zenway.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -31,7 +32,7 @@ public class SecurityConfig {
                                 "/webjars/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        .pathMatchers("/api/v1/usuarios").hasAnyRole("ADMINISTRADOR", "ASESOR")
+                        .pathMatchers(HttpMethod.POST,"/api/v1/usuarios").hasAnyRole("ADMINISTRADOR", "ASESOR")
                         .pathMatchers("/api/v1/usuarios/email/{documento}").hasRole("CLIENTE")
                         .pathMatchers("/api/v1/usuarios-por-emails").hasAnyRole("ADMINISTRADOR", "ASESOR")
                         .anyExchange().authenticated()

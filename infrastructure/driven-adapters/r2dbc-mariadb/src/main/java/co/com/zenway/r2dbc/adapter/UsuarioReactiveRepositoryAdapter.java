@@ -4,6 +4,7 @@ import co.com.zenway.model.usuario.Usuario;
 import co.com.zenway.model.usuario.gateways.UsuarioRepository;
 import co.com.zenway.r2dbc.entity.UsuarioEntity;
 import co.com.zenway.r2dbc.helper.ReactiveAdapterOperations;
+import lombok.extern.log4j.Log4j2;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -14,6 +15,7 @@ import java.util.List;
 
 
 @Repository
+@Log4j2
 public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         Usuario/* change for domain model */,
         UsuarioEntity/* change for adapter model */,
@@ -34,8 +36,11 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<Usuario> registrarUsuario(Usuario usuario) {
-
-        return this.save(usuario).as(transactionalOperator::transactional);
+        log.info("Guardando usuario en DB: {}", usuario);
+        return this.save(usuario)
+                .doOnSuccess(saved -> log.info("Usuario guardado: {}", saved))
+                .doOnError(e -> log.error("Error al guardar usuario", e))
+                .as(transactionalOperator::transactional);
     }
 
     @Override

@@ -46,6 +46,7 @@ public class RegistroUsuarioUseCase {
 
     private Mono<Usuario> asignarRolPorDefecto(Usuario usuario){
         return rolRepository.buscarRolPorDefecto()
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Rol por defecto no encontrado")))
                 .map(rol -> {
                     usuario.setRolId(rol.getId());
                     return usuario;
