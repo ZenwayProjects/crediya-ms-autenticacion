@@ -33,6 +33,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .pathMatchers("/api/v1/usuarios").hasAnyRole("ADMINISTRADOR", "ASESOR")
                         .pathMatchers("/api/v1/usuarios/email/{documento}").hasRole("CLIENTE")
+                        .pathMatchers("/api/v1/usuarios-por-emails").hasAnyRole("ADMINISTRADOR", "ASESOR")
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 ->

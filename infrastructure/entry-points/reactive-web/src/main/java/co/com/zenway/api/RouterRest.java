@@ -15,6 +15,7 @@ public class RouterRest {
     public RouterFunction<ServerResponse> routerFunction(UsuarioHandler usuarioHandler) {
         return route(GET("/api/v1/usuarios/email/{documento}"), usuarioHandler::obtenerEmailPorDocumento)
                 .and(route(POST("/api/v1/usuarios"), usuarioHandler::registrarUsuario))
-                .and(route(POST("/api/v1/login"), usuarioHandler::login));
+                .and(route(POST("/api/v1/login"), usuarioHandler::login))
+                .andRoute(POST("/api/v1/usuarios-por-emails"), usuarioHandler::obtenerUsuariosPorEmail);
     }
 }

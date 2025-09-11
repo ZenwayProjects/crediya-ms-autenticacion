@@ -6,7 +6,10 @@ import co.com.zenway.model.usuario.gateways.UsuarioRepository;
 import co.com.zenway.usecase.usuario.exception.DocumentoNoExiste;
 import co.com.zenway.usecase.usuario.utils.Constantes;
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class SolicitudUseCase {
@@ -23,5 +26,9 @@ public class SolicitudUseCase {
                             .doOnNext(model -> System.out.println("Model -> " + model.getId()))
                             .map(model -> new UsuarioInfoSolicitudDTO(model.getId(), model.getEmail()));
                 });
+    }
+
+    public Flux<Usuario> obtenerUsuariosPorEmails(List<String> emails){
+        return usuarioRepository.buscarPorEmails(emails);
     }
 }
