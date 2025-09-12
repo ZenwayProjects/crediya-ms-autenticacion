@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN gradle clean build -x test -x validateStructure --no-daemon
 
-# Fase runtime
+# Fase runtime !
 FROM openjdk:21-oracle
 WORKDIR /app
 COPY --from=build /app/applications/app-service/build/libs/*.jar app.jar
