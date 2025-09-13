@@ -1,6 +1,7 @@
 package co.com.zenway.api;
 
 import co.com.zenway.api.dto.*;
+import co.com.zenway.api.exceptions.GlobalErrorHandler;
 import co.com.zenway.api.mapper.UsuarioMapper;
 import co.com.zenway.api.utils.ConstantesLogger;
 import co.com.zenway.security.adapter.JwtProvider;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+
+import static co.com.zenway.api.utils.ConstantesErrores.BODY_REQUERIDO;
 
 
 @Component
@@ -36,7 +39,7 @@ public class UsuarioHandler {
 
     public Mono<ServerResponse> login(ServerRequest serverRequest){
         return serverRequest.bodyToMono(LoginDTO.class)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Body Requerido")))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException(BODY_REQUERIDO)))
                 .flatMap(loginDTO -> loginUseCase.login(loginDTO.getEmail(), loginDTO.getPassword()))
                 .map(jwtProvider::generarToken)
                 .map(TokenResponseDTO::new)
@@ -45,7 +48,6 @@ public class UsuarioHandler {
                         .bodyValue(resp)
                 )
                 .doOnNext(resp -> log.info("Usuario logueado: {}", resp))
-
                 .doOnError(e -> {
                     log.error("Error en login: {}", e.getMessage(), e);
                     Throwable cause = e.getCause();

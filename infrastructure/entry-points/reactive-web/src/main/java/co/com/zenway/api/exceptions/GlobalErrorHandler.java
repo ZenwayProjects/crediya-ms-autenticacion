@@ -1,4 +1,4 @@
-package co.com.zenway.api;
+package co.com.zenway.api.exceptions;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -8,6 +8,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+import static co.com.zenway.api.utils.ConstantesErrores.*;
+
 @Component
 public class GlobalErrorHandler {
     private static final String MENSAJE = "mensaje";
@@ -15,20 +17,17 @@ public class GlobalErrorHandler {
 
 
     public Mono<ServerResponse> handler(Throwable exception){
-        if(exception instanceof ConstraintViolationException violationException){
-            return constraintViolationHandler(violationException);
-        } else if (exception instanceof IllegalArgumentException ie) {
-            return illegalArgumentHandler(ie);
-        }
-        else {
-            return genericErrorHandler(exception);
-        }
+        return switch (exception) {
+            case ConstraintViolationException violationException -> constraintViolationHandler(violationException);
+            case IllegalArgumentException ie -> illegalArgumentHandler(ie);
+            default -> genericErrorHandler(exception);
+        };
     }
 
     private Mono<ServerResponse> genericErrorHandler(Throwable e){
         return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .bodyValue(Map.of(
-                        ERROR, "Error interno del servidor",
+                        ERROR, ERROR_INTERNO,
                         MENSAJE, e.getMessage() != null ? e.getMessage() : "Ocurrió un error inesperado"
                 ));
 
@@ -41,13 +40,13 @@ public class GlobalErrorHandler {
                 .toList();
 
         return ServerResponse.badRequest().bodyValue(Map.of(
-                ERROR, "Validacion fallida",
+                ERROR, VALIDACION_FALLIDA,
                 "violacion", constraintViolations));
     }
 
     private Mono<ServerResponse> illegalArgumentHandler(IllegalArgumentException illegalArgumentException){
         return ServerResponse.badRequest().bodyValue(Map.of(
-                ERROR, "Argumento no válido",
+                ERROR, ARGUMENTO_NO_VALIDO,
                 MENSAJE,illegalArgumentException.getMessage()
         ));
 

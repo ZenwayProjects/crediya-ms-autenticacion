@@ -2,6 +2,7 @@ package co.com.zenway.api;
 
 import co.com.zenway.api.dto.UsuarioRegistroDTO;
 import co.com.zenway.api.dto.UsuarioResponseDTO;
+import co.com.zenway.api.exceptions.GlobalErrorHandler;
 import co.com.zenway.api.mapper.UsuarioMapper;
 import co.com.zenway.model.usuario.Usuario;
 import co.com.zenway.usecase.usuario.RegistroUsuarioUseCase;

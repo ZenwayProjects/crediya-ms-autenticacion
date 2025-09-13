@@ -24,8 +24,8 @@ cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080,http://localhost:8081"
 adapters:
   r2dbc:
-    host: localhost
+    host: ${DB_HOST_AUTH}
     port: 3306
-    database: ${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    database: ${DB_NAME_AUTH}
+    username: ${DB_USER_AUTH}
+    password: ${DB_PASSWORD_AUTH}

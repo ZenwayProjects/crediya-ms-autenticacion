@@ -2,11 +2,9 @@ package co.com.zenway.usecase.usuario;
 
 import co.com.zenway.model.rol.gateways.RolRepository;
 import co.com.zenway.model.usuario.Usuario;
-import co.com.zenway.model.usuario.dto.UsuarioInfoSolicitudDTO;
 import co.com.zenway.model.usuario.gateways.PasswordEncoder;
 import co.com.zenway.model.usuario.gateways.UsuarioRepository;
 import co.com.zenway.usecase.usuario.exception.DocumentoDeIdentidadEnUso;
-import co.com.zenway.usecase.usuario.exception.DocumentoNoExiste;
 import co.com.zenway.usecase.usuario.exception.EmailEnUso;
 import co.com.zenway.usecase.usuario.utils.Constantes;
 import lombok.RequiredArgsConstructor;

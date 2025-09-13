@@ -1,4 +1,4 @@
 security:
   jwt:
-    secret: docjtehkasdhashd9qhwi2iuh9sad91h912hasidhaiohd128h9asidkasdhiuahi
+    secret: ${JWT_SECRET}
 
