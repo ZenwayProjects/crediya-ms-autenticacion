@@ -35,7 +35,8 @@ public class SecurityConfig {
                                 "/health",
                                 "/api/v1/login",
                                 "/webjars/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "swagger-ui/**"
                         ).permitAll()
                         .pathMatchers(HttpMethod.POST,"/api/v1/usuarios").hasAnyRole("ADMINISTRADOR", "ASESOR")
                         .pathMatchers("/api/v1/usuarios/email/{documento}").hasRole("CLIENTE")

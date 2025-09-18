@@ -7,7 +7,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,7 +57,17 @@ class UseCasesConfigTest {
                 }
 
                 @Override
+                public Mono<Usuario> obtenerIdYEmailPorDocumentoIdentidad(String documento) {
+                    return null;
+                }
+
+                @Override
                 public Mono<Usuario> findByEmail(String email) {
+                    return null;
+                }
+
+                @Override
+                public Flux<Usuario> buscarPorEmails(List<String> email) {
                     return null;
                 }
 

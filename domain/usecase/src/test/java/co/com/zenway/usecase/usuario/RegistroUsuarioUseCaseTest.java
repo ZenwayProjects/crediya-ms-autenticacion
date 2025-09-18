@@ -5,6 +5,9 @@ import co.com.zenway.model.rol.gateways.RolRepository;
 import co.com.zenway.model.usuario.Usuario;
 import co.com.zenway.model.usuario.gateways.PasswordEncoder;
 import co.com.zenway.model.usuario.gateways.UsuarioRepository;
+import co.com.zenway.usecase.usuario.exception.DocumentoDeIdentidadEnUso;
+import co.com.zenway.usecase.usuario.exception.EmailEnUso;
+import co.com.zenway.usecase.usuario.utils.Constantes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +20,7 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +32,7 @@ class RegistroUsuarioUseCaseTest {
     @Mock
     private RolRepository rolRepository;
 
+    @Mock
     private Usuario usuarioTest;
 
     @Mock
@@ -131,6 +135,46 @@ class RegistroUsuarioUseCaseTest {
                 .expectNextMatches(u -> u.getRolId().equals((short) 2))
                 .verifyComplete();
     }
+
+    @Test
+    void shouldThrowErrorWhenEmailInUse() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("existente@test.com");
+        usuario.setDocumentoIdentidad("12345");
+
+        when(usuarioRepository.existsByEmail(usuario.getEmail()))
+                .thenReturn(Mono.just(true));
+
+        StepVerifier.create(registroUsuarioUseCase.registrarUsuario(usuario))
+                .expectErrorMatches(e -> e instanceof EmailEnUso &&
+                        e.getMessage().equals(Constantes.EMAIL_EN_USO))
+                .verify();
+
+        // No se llama a existsByDocumentoIdentidad ni registrarUsuario
+        verify(usuarioRepository, never()).existsByDocumentoIdentidad(any());
+        verify(usuarioRepository, never()).registrarUsuario(any());
+    }
+
+    @Test
+    void shouldThrowErrorWhenDocumentoInUse() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("nuevo@test.com");
+        usuario.setDocumentoIdentidad("existente");
+
+        when(usuarioRepository.existsByEmail(usuario.getEmail()))
+                .thenReturn(Mono.just(false));
+        when(usuarioRepository.existsByDocumentoIdentidad(usuario.getDocumentoIdentidad()))
+                .thenReturn(Mono.just(true));
+
+        StepVerifier.create(registroUsuarioUseCase.registrarUsuario(usuario))
+                .expectErrorMatches(e -> e instanceof DocumentoDeIdentidadEnUso &&
+                        e.getMessage().equals(Constantes.DOCUMENTO_IDENTIDAD_EN_USO))
+                .verify();
+
+        // No se llama a registrarUsuario
+        verify(usuarioRepository, never()).registrarUsuario(any());
+    }
+
 
 
 
