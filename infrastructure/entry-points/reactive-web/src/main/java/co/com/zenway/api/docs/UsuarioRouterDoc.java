@@ -76,7 +76,7 @@ public class UsuarioRouterDoc {
 
     @Bean
     @RouterOperation(
-            path = "/api/v1/auth/login",
+            path = "/api/v1/login",
             produces = {"application/json; charset=UTF-8"},
             method = RequestMethod.POST,
             beanClass = UsuarioHandler.class,
