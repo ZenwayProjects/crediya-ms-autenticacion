@@ -24,7 +24,7 @@ public class SolicitudUseCase {
                     }
                     return usuarioRepository.obtenerIdYEmailPorDocumentoIdentidad(documento)
                             .doOnNext(model -> System.out.println("Model -> " + model.getId()))
-                            .map(model -> new UsuarioInfoSolicitudDTO(model.getId(), model.getEmail()));
+                            .map(model -> new UsuarioInfoSolicitudDTO(model.getId(), model.getNombre(), model.getEmail(), model.getSalarioBase()));
                 });
     }
 
