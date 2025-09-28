@@ -1,13 +1,20 @@
 package co.com.zenway.config;
 
+import co.com.zenway.model.usuario.Usuario;
+import co.com.zenway.model.usuario.gateways.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UseCasesConfigTest {
+class UseCasesConfigTest {
 
     @Test
     void testUseCaseBeansExist() {
@@ -29,6 +36,47 @@ public class UseCasesConfigTest {
     @Configuration
     @Import(UseCasesConfig.class)
     static class TestConfig {
+
+        // Stub repository to satisfy UseCase constructor dependencies discovered by @ComponentScan
+        @Bean
+        public UsuarioRepository usuarioRepository() {
+            return new UsuarioRepository() {
+
+                @Override
+                public Mono<Usuario> registrarUsuario(Usuario usuario) {
+                    return Mono.just(usuario);
+                }
+                @Override
+                public Mono<Boolean> existsByEmail(String email) {
+                    return Mono.just(false);
+                }
+
+                @Override
+                public Mono<Boolean> existsByDocumentoIdentidad(String documentoIdentidad) {
+                    return null;
+                }
+
+                @Override
+                public Mono<Usuario> obtenerIdYEmailPorDocumentoIdentidad(String documento) {
+                    return null;
+                }
+
+                @Override
+                public Mono<Usuario> findByEmail(String email) {
+                    return null;
+                }
+
+                @Override
+                public Flux<Usuario> buscarPorEmails(List<String> email) {
+                    return null;
+                }
+
+                @Override
+                public Mono<Usuario> findById(Long usuarioId) {
+                    return null;
+                }
+            };
+        }
 
         @Bean
         public MyUseCase myUseCase() {
